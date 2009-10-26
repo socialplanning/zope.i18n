@@ -50,13 +50,17 @@ def allow_language(lang):
     return lang in config.ALLOWED_LANGUAGES
 
 
-def handler(catalogs, name):
+def handler(catalogs, name, factory=None):
     """ special handler handling the merging of two message catalogs """
     gsm = getGlobalSiteManager()
     # Try to get an existing domain and add the given catalogs to it
     domain = queryUtility(ITranslationDomain, name)
     if domain is None:
-        domain = TranslationDomain(name)
+        if factory is None:
+            domain = TranslationDomain(name)
+        else:
+            domain = factory(name)
+
         gsm.registerUtility(domain, ITranslationDomain, name=name)
     for catalog in catalogs:
         domain.addCatalog(catalog)
@@ -64,7 +68,7 @@ def handler(catalogs, name):
     domain.addCatalog(TestMessageCatalog(name))
 
 
-def registerTranslations(_context, directory):
+def registerTranslations(_context, directory, _factory=None):
     path = os.path.normpath(directory)
     domains = {}
 
@@ -101,7 +105,7 @@ def registerTranslations(_context, directory):
         _context.action(
             discriminator = None,
             callable = handler,
-            args = (catalogs, name))
+            args = (catalogs, name, _factory))
 
     # also register the interface for the translation utilities
     provides = ITranslationDomain
