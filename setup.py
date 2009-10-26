@@ -57,17 +57,12 @@ setup(
     namespace_packages=['zope',],
     install_requires=['setuptools',
                       'pytz',
-                      'zope.schema',
-                      'zope.i18nmessageid',
-                      'zope.component',
                       ],
     include_package_data = True,
     zip_safe = False,
     extras_require = dict(
         compile = ['python-gettext'],
         zcml = [
-            'zope.component [zcml]',
-            'zope.configuration',
             ],
         ),
     )
